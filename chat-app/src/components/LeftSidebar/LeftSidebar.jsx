@@ -3,6 +3,7 @@ import './LeftSidebar.css'
 import assets from '../../assets/assets'
 
 const LeftSidebar = () => {
+const savedImage = localStorage.getItem("profileImage");
   return (
     <div className='ls'>
         <div className="ls-top">
@@ -25,7 +26,7 @@ const LeftSidebar = () => {
         <div className="ls-list">
           {Array(12).fill("").map(( item,index )=>(
             <div key={index}  className="friends">
-            <img src={assets.profile_img} alt=""/>
+            <img src={savedImage || assets.profile_img} alt=""/>
             <div>
                 <p>Priyanshu</p>
                 <span>Hello , how are you?</span>
