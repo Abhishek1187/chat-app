@@ -1,62 +1,31 @@
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-
+import { supabase } from '../config/supabase';
 
 const upload = async (file) => {
-    const storage = getStorage();
-
-
-    /** @type {any} */
-    const metadata = {
-        contentType: 'image/jpeg'
-    };
-
-   
-    const storageRef = ref(storage, `images/${Date.now()+ file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-
-    return new Promise((resolve , reject )=>{
-        uploadTask.on('state_changed',
-        (snapshot) => {
-            
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-                case 'paused':
-                    console.log('Upload is paused');
-                    break;
-                case 'running':
-                    console.log('Upload is running');
-                    break;
-            }
-        },
-        (error) => {
-           
-            switch (error.code) {
-                case 'storage/unauthorized':
-                   
-                    break;
-                case 'storage/canceled':
-                   
-                    break;
-
-            
-
-                case 'storage/unknown':
-                   
-                    break;
-            }
-        },
-        () => {
-           
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                resolve (downloadURL)
+    const fileName = `images/${Date.now()}_${file.name}`;
+    try {
+        const { data, error } = await supabase.storage
+            .from('chat-images') // Make sure this bucket exists in your Supabase project
+            .upload(fileName, file, {
+                cacheControl: '3600',
+                upsert: false
             });
+
+        if (error) {
+            console.error('Upload error:', error);
+            throw error;
         }
-    );
 
-    })
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+            .from('chat-images')
+            .getPublicUrl(fileName);
 
-    
+        console.log('Upload successful:', publicUrl);
+        return publicUrl;
+    } catch (error) {
+        console.error('Upload failed:', error);
+        throw error;
+    }
 }
 
 export default upload;

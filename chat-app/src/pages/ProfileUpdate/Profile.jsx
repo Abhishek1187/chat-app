@@ -6,9 +6,12 @@ import { auth, db } from '../../config/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
+
 import upload from '../../lib/upload';
 import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
+
+ 
 
 
 const Profile = () => {
@@ -19,6 +22,22 @@ const Profile = () => {
   const [uid, setUid] = useState("");
   const [prevImage, setPrevImage] = useState("");
   const { setUserData } = useContext(AppContext)
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  
+
+   useEffect(() => {
+    if (!image) {
+      setPreviewUrl("");
+      return;
+    }
+    const objectUrl = URL.createObjectURL(image);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl); // cleanup!
+  }, [image]);
+
+
+
   const ProfileUpdate = async (event) => {
     event.preventDefault();
     try {
@@ -83,7 +102,7 @@ const Profile = () => {
           <h3>Profile Details</h3>
           <label htmlFor='avatar'>
             <input onChange={(e) => setImage(e.target.files[0])} type='file' id='avatar' accept='.png , .jpg , .jpeg' hidden />
-            <img src={image ? URL.createObjectURL(image) : assets.avatar_icon} alt='' />
+            <img src={previewUrl ? previewUrl : assets.avatar_icon} alt='' />
             Upload profile image
           </label>
           <input onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Your name' required />
@@ -92,7 +111,7 @@ const Profile = () => {
             Save
           </button>
         </form>
-        <img className='profile-pic' src={image ? URL.createObjectURL(image) : assets.logo_icon} alt="" />
+        <img className='profile-pic' src={previewUrl ? previewUrl: prevImage ? prevImage : assets.logo_icon} alt="" />
       </div>
     </div>
   )

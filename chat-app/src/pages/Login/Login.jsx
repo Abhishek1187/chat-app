@@ -7,7 +7,7 @@ const Login = () => {
     const[currState , setCurrState] = useState("Sign Up");
     const[ userName , setUserName ] = useState("");
     const[ email , setEmail] = useState("");
-    const[ password , usePassword ] = useState("");
+    const[ password , setPassword ] = useState("");
 
     const onSubmitHandler = (event) => {
         event.preventDefault()
@@ -27,7 +27,7 @@ const Login = () => {
         <h2>{currState}</h2>
       {currState === "Sign Up"?<input onChange={(e)=>setUserName(e.target.value)} value = {userName} type="text" placeholder="Username" className="login-input" required/>:null}
       <input onChange={(e)=>setEmail(e.target.value)} value={email} type="email" placeholder="Email address " className="login-input" required />
-      <input onChange={(e)=>usePassword(e.target.value)} value={password} type="password" placeholder="Password" className="login-input" required/>
+      <input onChange={(e)=>setPassword(e.target.value)} value={password} type="password" placeholder="Password" className="login-input" required/>
       <button type="submit">{currState ==="Sign Up"?"Create account":"Login now"}</button>
 
       <div className="login-terms"> 

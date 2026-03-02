@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { getFirestore, setDoc , doc} from "firebase/firestore";
+import { getFirestore, setDoc , doc, onSnapshot, collection, query, where, getDocs } from "firebase/firestore";
 import {toast} from "react-toastify";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -25,6 +25,7 @@ const signup = async(username , email , password) => {
     try {
         const res = await createUserWithEmailAndPassword(auth,email,password);
         const user = res.user;
+        console.log("Signup successful:", user.email);
         await setDoc(doc(db,"users",user.uid), {
             id:user.uid,
             username:username.toLowerCase(),
@@ -37,10 +38,15 @@ const signup = async(username , email , password) => {
         await setDoc(doc(db,"chats",user.uid),{
             chatData:[]
         })
+        return res;
     } catch (error) {
-        console.error(error);
-        toast.error(error.code.split('/')[1].split('-').join(" "));
-        
+        console.error("Signup error:", error);
+        let errorMessage = "Signup failed";
+        if(error.code) {
+            errorMessage = error.code.split('/')[1].split('-').join(" ");
+        }
+        toast.error(errorMessage);
+        throw error;
     }
     
 }
@@ -63,4 +69,43 @@ const logout = async() => {
     }
     
 }
+
+// Function to get messages between two users
+export const getMessages = (conversationId, callback) => {
+    try {
+        const messageRef = doc(db, 'messages', conversationId);
+        const unsubscribe = onSnapshot(messageRef, (doc) => {
+            if(doc.exists()) {
+                callback(doc.data().messages || []);
+            } else {
+                callback([]);
+            }
+        });
+        return unsubscribe;
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        return () => {};
+    }
+}
+
+// Function to initialize or get conversation
+export const initializeConversation = async (userId1, userId2) => {
+    try {
+        const conversationId = [userId1, userId2].sort().join('_');
+        
+        // Check if conversation exists
+        const msgRef = doc(db, 'messages', conversationId);
+        const msgSnap = await onSnapshot(msgRef, (doc) => {
+            if(!doc.exists()) {
+                // Create new conversation document
+                setDoc(msgRef, { messages: [] }).catch(err => console.log(err));
+            }
+        });
+        
+        return conversationId;
+    } catch (error) {
+        console.error("Error initializing conversation:", error);
+    }
+}
+
 export {signup,login,logout,auth,db}
