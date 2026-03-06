@@ -63,7 +63,7 @@
     padding-bottom: 50px;
     overflow-y: scroll;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
 
 .s-msg div img,.r-msg div img{

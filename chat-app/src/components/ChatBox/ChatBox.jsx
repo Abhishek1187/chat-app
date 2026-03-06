@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import './ChatBox.css'
 import assets from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
@@ -8,6 +8,13 @@ const ChatBox = () => {
   const { selectedUser, messages, messagesId, sendMessage, userData } = useContext(AppContext);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -67,6 +74,7 @@ const ChatBox = () => {
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className='chat-input'>
