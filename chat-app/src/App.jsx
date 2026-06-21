@@ -13,29 +13,29 @@ import { AppContext } from './context/AppContext.jsx'
 const App = () => {
 
   const navigate = useNavigate();
-  const {loadUserData} = useContext(AppContext)
+  const { loadUserData } = useContext(AppContext)
 
-  useEffect(()=>{
-    onAuthStateChanged(auth , async (user) => {
-      if(user) {
-        navigate('/chat');
+  useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        navigate('/Chat');
         await loadUserData(user.uid)
       }
-      else{
+      else {
         navigate('/');
       }
-      
+
     })
-  },[])
+  }, [])
 
   return (
     <>
-    <ToastContainer/>
+      <ToastContainer />
       <Routes>
-        
-        <Route path= '/' element = {<Login/>}/>
-        <Route path='/Chat' element = {<Chat/>}/>
-        <Route path='/Profile' element = {<Profile/>}/>
+
+        <Route path='/' element={<Login />} />
+        <Route path='/Chat' element={<Chat />} />
+        <Route path='/Profile' element={<Profile />} />
       </Routes>
     </>
   )
