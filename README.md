@@ -1,3 +1,9 @@
+DEPLOYED LINK >>
+https://chat-app-d042d.web.app/
+
+
+
+
 # 💬 Real-Time Chat Application
 
 A modern real-time chat application that enables seamless communication with instant messaging, secure authentication, and media sharing.
