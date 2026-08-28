@@ -24,7 +24,14 @@ const RightSidebar = () => {
     <div className='rs'>
       <div className="rs-profile">
         <img src={selectedUser?.avatar || assets.profile_img} alt=""/>
-        <h3>{selectedUser?.name} <img src={assets.green_dot} className='dot' alt=""/></h3>
+        <h3>
+          {selectedUser?.name} 
+          <img 
+            src={assets.green_dot} 
+            className={`dot ${selectedUser && (Date.now() - selectedUser.lastSeen < 120000) ? '' : 'offline'}`} 
+            alt=""
+          />
+        </h3>
         <p>{selectedUser?.bio || "No bio added"}</p>
       </div>  
       <hr />

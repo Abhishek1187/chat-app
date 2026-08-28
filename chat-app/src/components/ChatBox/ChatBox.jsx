@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext'
 import upload from '../../lib/upload'
 
 const ChatBox = () => {
-  const { selectedUser, messages, messagesId, sendMessage, userData } = useContext(AppContext);
+  const { selectedUser, setSelectedUser, messages, messagesId, sendMessage, userData } = useContext(AppContext);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -58,8 +58,21 @@ const ChatBox = () => {
   return (
     <div className='chat-box'>
       <div className="chat-user">
+        <img 
+          src={assets.arrow_icon} 
+          className="arrow-back" 
+          alt="Back" 
+          onClick={() => setSelectedUser(null)} 
+        />
         <img src={selectedUser?.avatar || assets.profile_img} alt=""/>
-        <p>{selectedUser?.name} <img className='dot'src={assets.green_dot} alt=""/></p>
+        <p>
+          {selectedUser?.name} 
+          <img 
+            className={`dot ${selectedUser && (Date.now() - selectedUser.lastSeen < 120000) ? '' : 'offline'}`}
+            src={assets.green_dot} 
+            alt=""
+          />
+        </p>
         <img src={ assets.help_icon } className='help' alt=""/>
       </div> 
 
@@ -69,7 +82,7 @@ const ChatBox = () => {
             {msg.image && <img className='msg-img' src={msg.image} alt=""/>}
             {msg.text && <p className='msg'>{msg.text}</p>}
             <div>
-              <img src={msg.sId === userData?.id ? userData?.avatar : selectedUser?.avatar} alt="" />
+              <img src={(msg.sId === userData?.id ? userData?.avatar : selectedUser?.avatar) || assets.profile_img} alt="" />
               <p>{new Date(msg.timestamp).toLocaleTimeString()}</p>
             </div>
           </div>
